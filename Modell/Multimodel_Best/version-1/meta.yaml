@@ -1,0 +1,12 @@
+creation_timestamp: 1675694186049
+current_stage: None
+description: ''
+last_updated_timestamp: 1675694186049
+name: Multimodel_Best
+run_id: b54b53a7e41a479fbeb3bbedc818d345
+run_link: ''
+source: file:///mnt/projects_sdc/lai/GeoTransForBioreaktor/mlruns/195748947916996487/b54b53a7e41a479fbeb3bbedc818d345/artifacts/model50
+status: READY
+status_message: null
+user_id: null
+version: 1
