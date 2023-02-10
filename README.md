@@ -28,7 +28,7 @@
 
 ***trainuniluft, trainunispeed***: Das Modell wird trainiert. Das Modell wird einmal pro Trainingsepoche getestet, um die Klassifizierungsgenauigkeit für normale und abnormale Daten zu erhalten. Visualisierung über visdom
 
-## Doku: 
+## Doku: Multimodel
 Multimodel: In dieser Dokumentation wird ein multimodales Modell mit geometrischer Transformation trainiert und ausgewertet.
 
 ***dataset_bioreaktorMulti***: Erstellen Sie den Datensatz (die nicht mit dem Bild übereinstimmten Prozessparameter als Anomalie) und speichern Sie den Path, Prozesparameter, label, zu einer csv-Datei. Das Format ist (Path, Prozessparameter, label für GeoTrans).   
