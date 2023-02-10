@@ -124,15 +124,16 @@ def load_data(dataname):
                 # [b, 72]
                 logits,_ = model(x)
                 # [b]
-                pred = logits.argmax(dim=1)
+                pred =  nn.functional.softmax(logits, dim=1)
+                p = torch.tensor([pred[i, int(label[i].item())] for i in range(len(label))])
 
                 # [b] vs [b] => scalar tensor
                 # cat to calcute confusion matrix
                 if batchidx == 0:
-                    total_pred = pred
+                    total_pred = p
                     total_label = label
                 else:
-                    total_pred = torch.cat((total_pred, pred), 0)
+                    total_pred = torch.cat((total_pred, p), 0)
                     total_label = torch.cat((total_label, label), 0)
             total_pred = total_pred.view((-1, 72))
             total_label = total_label.view((-1, 72))
@@ -149,15 +150,16 @@ def load_data(dataname):
                 # [b, 72]
                 logits,_ = model(x)
                 # [b]
-                pred = logits.argmax(dim=1)
+                pred =  nn.functional.softmax(logits, dim=1)
+                p = torch.tensor([pred[i, int(label[i].item())] for i in range(len(label))])
 
                 # [b] vs [b] => scalar tensor
                 # cat to calcute confusion matrix
                 if batchidx == 0:
-                    total_pred = pred
+                    total_pred = p
                     total_label = label
                 else:
-                    total_pred = torch.cat((total_pred, pred), 0)
+                    total_pred = torch.cat((total_pred, p), 0)
                     total_label = torch.cat((total_label, label), 0)
             total_pred = total_pred.view((-1, 72))
             total_label = total_label.view((-1, 72))

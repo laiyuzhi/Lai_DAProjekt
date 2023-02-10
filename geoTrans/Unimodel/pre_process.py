@@ -37,8 +37,9 @@ def load_csv(filename, root):
 
 
 class UserCrop:
-    def __init__(self, filename, root):
-        self.path = "/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/raw/MultimodelSpeedLuft/Speed400Luft2/1668792765397_camera_frame.png"
+    def __init__(self, filename, root, path):
+        
+        self.path = path
         self.root = root
         self.filename = filename
 
@@ -59,63 +60,18 @@ class UserCrop:
                 print(bbox)
 
         return img, bbox
-        cut = img[bbox[1] : bbox[1] + bbox[3], bbox[0] : bbox[0] + bbox[2]]
-        print(bbox)
+     
 
-    # # read from csv file
-    # images, labels = [], []
-    # with open(os.path.join(self.root, filename)) as f:
-    #     reader = csv.reader(f)
-    #     for row in reader:
-    #         # 'pokemon\\bulbasaur\\00000000.png', 0
-    #         img, label = row
-    #         label = int(label)
-
-    #         images.append(img)
-    #         labels.append(label)
-
-    # assert len(images) == len(labels)
-
-    # return images, labels
-
-def cut_picture():
-    img, bbox = UserCrop('bboxMultiSpeed', '/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/raw/MultimodelSpeedLuft').cut()
+def cut_picture(point, rawimages_path, image_path):
+    img, bbox = UserCrop(point, rawimages_path, image_path).cut()
     cut = img[bbox[1] : bbox[1] + bbox[3], bbox[0] : bbox[0] + bbox[2]]
     cv2.namedWindow("cut")
     cv2.imshow("cut", cut)
     cv2.waitKey(0)
-    # root = 'F:\\data_lai\\unimodel_data\\train_normal'
-    # images = load_csv("test_a", root)
-    # img, bbox = UserCrop('bbox', 'E:\\Program Files\\Abschlussarbeit\\geoTrans').cut()
-    # print(images)
-    # cut = img[bbox[1] : bbox[1] + bbox[3], bbox[0] : bbox[0] + bbox[2]]
-    # cv2.namedWindow("cut")
-    # cv2.imshow("cut", cut)
-    # cv2.waitKey(0)
-    # cut = cv2.resize(cut, [256, 256])
-    # cv2.namedWindow("cut2")
-    # cv2.imshow("cut2", cut)
-    # cv2.waitKey(0)
-    # # import PIL
-    # for i in range(5):
-    #     # print("".join(images[i]))
-    #     image = Image.open("".join(images[i])).convert("L")
-    #     cut = image.crop(bbox)
-    #     cut = np.array(cut)
-    #     cut = np.expand_dims(cut, -1)
-    #     print((image.dtype))
-    #     cv2.namedWindow("a")
-    #     cv2.imshow("a", image)
-    #     cv2.waitKey(0)
-    #     #cut = image[bbox[1] : bbox[1] + bbox[3], bbox[0] : bbox[0] + bbox[2]]
-    #     #cut = cv2.resize(cut, [64, 64])
-    #     cv2.namedWindow("s")
-    #     cv2.imshow("s", cut)
-    #     cv2.waitKey(0)
-def preprocess():
-    root = '/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/raw/MultimodelSpeedLuft'
-    save_root = '/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/processed/MultimodelSpeedLuft'
-    _, bbox = UserCrop('bboxMultiSpeed', '/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/raw/MultimodelSpeedLuft').cut()
+   
+def preprocess(root, save_root, point, rawimages_path, image_path):
+   
+    _, bbox = UserCrop(point, rawimages_path, image_path).cut()
     for name in os.listdir(root):
         if not os.path.isdir(os.path.join(root, name)):
             continue
@@ -141,4 +97,10 @@ def preprocess():
         print(i)
 
 if __name__ =='__main__':
-   preprocess()
+    name = 'bboxMultiSpeed'
+    rawimages_path= '/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/raw/MultimodelSpeedLuft'
+    image_path = "/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/raw/MultimodelSpeedLuft/Speed400Luft2/1668792765397_camera_frame.png"
+    root = '/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/raw/MultimodelSpeedLuft'
+    save_root= '/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/processed/MultimodelSpeedLuft'
+    cut_picture(name, rawimages_path, image_path)
+    preprocess(root, save_root, name, rawimages_path, image_path)
