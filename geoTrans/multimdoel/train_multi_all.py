@@ -2,7 +2,7 @@ import sys
 sys.path.append('/mnt/projects_sdc/lai/GeoTransForBioreaktor/geoTrans')
 from dataset_bioreaktorMulti import Bioreaktor_Detection
 from torch.utils.data import DataLoader, Dataset
-from geoTrans.multimdoel.Multi_Model import WideResNet
+from Multi_Model import WideResNet
 import torch
 import torch.optim as optim
 from torch import nn
@@ -30,7 +30,7 @@ def main():
     testnormal_loader = DataLoader(testnormal_db, batch_size=batchsz, shuffle=False, num_workers=0)
     testanormal_db = Bioreaktor_Detection(root, 64, mode='Test')
     testanormal_loader = DataLoader(testanormal_db, batch_size=batchsz, shuffle=False, num_workers=0)
-    x1, x2, label = iter(testnormal_loader).next()
+    x1, x2, label = iter(testanormal_loader).next()
     print('x1:', x1.shape, 'x2:', x2, 'label:', label.shape)
 
     device = torch.device('cuda')

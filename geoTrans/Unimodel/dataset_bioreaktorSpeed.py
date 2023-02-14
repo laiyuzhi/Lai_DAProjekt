@@ -54,16 +54,16 @@ class Bioreaktor_Detection(Dataset):
         # testdata anormal
         elif mode == 'testbig':
 
-            self.images = self.images_testanormal[:cfg.NUM_TRANS*200]
-            self.labels = self.labels_testanormal[:cfg.NUM_TRANS*200]
+            self.images = self.images_testanormal[:cfg.NUM_TRANS*1000]
+            self.labels = self.labels_testanormal[:cfg.NUM_TRANS*1000]
         elif mode == 'testsmall':
 
-            self.images = self.images_testanormal1[:int(cfg.NUM_TRANS*200)]
-            self.labels = self.labels_testanormal1[:int(cfg.NUM_TRANS*200)]
+            self.images = self.images_testanormal1[:int(cfg.NUM_TRANS*1000)]
+            self.labels = self.labels_testanormal1[:int(cfg.NUM_TRANS*1000)]
         ## vali data normal nicht trainiert
         else:
-            self.images = self.images_train[cfg.NUM_TRANS*4000:cfg.NUM_TRANS*4200]
-            self.labels = self.labels_train[cfg.NUM_TRANS*4000:cfg.NUM_TRANS*4200]
+            self.images = self.images_train[cfg.NUM_TRANS*4000:cfg.NUM_TRANS*5000]
+            self.labels = self.labels_train[cfg.NUM_TRANS*4000:cfg.NUM_TRANS*5000]
 
     def load_csv(self, filename_train, filename_testanormal, filename_testanormal1):
 
@@ -186,8 +186,8 @@ class Bioreaktor_Detection(Dataset):
             lambda x:Image.open(x).convert('L'), # string path= > image data
             transforms.Resize((self.resize, self.resize)),
             transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485,],
-                                 std=[0.229,])
+            transforms.Normalize(mean=[0.2686,],
+                                 std=[0.0940,])
         ])
 
         img = tf(img)

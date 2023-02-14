@@ -34,6 +34,7 @@ def cf_matrix(prob, label, threshold, name):
     pred = torch.where(prob >= threshold, torch.tensor(1), torch.tensor(0))
     pred = torch.Tensor.cpu(pred)
     label = torch.Tensor.cpu(label)
+    temp = torch.tensor(np.arange(0,len(pred)))
     conf_matrix = confusion_matrix(label, pred)
     plt.imshow(np.array(conf_matrix), cmap=plt.cm.Blues)
     thresh = conf_matrix.max() / 2
@@ -43,15 +44,16 @@ def cf_matrix(prob, label, threshold, name):
             plt.text(x, y, info,
                     verticalalignment='center',
                     horizontalalignment='center',
-                    color="white" if info > thresh else "black")
+                    color="white" if info > thresh else "black", fontsize=24)
 
     # plt.tight_layout()
-    plt.yticks(range(2), ['anormal', 'normal'])
-    plt.xticks(range(2), ['anormal', 'normal'], rotation=45)
+    plt.yticks(range(2), ['anormal', 'normal'], fontsize=15)
+    plt.xticks(range(2), ['anormal', 'normal'], rotation=0, fontsize=15)
     plt.savefig(name+'.png', bbox_inches='tight')
     mlflow.log_artifact(name+'.png')
     plt.ioff()
     plt.clf()
+    return temp[pred.view(-1) != label.view(-1)], conf_matrix
 
 
 def draw_roc(label, prob, name):
@@ -62,8 +64,8 @@ def draw_roc(label, prob, name):
     plt.plot([0, 1], [0, 1], 'k--')
     plt.xlim([-0.05, 1.0])
     plt.ylim([0.0, 1.05])
-    plt.xlabel('False Positive Rate')
-    plt.ylabel('True Positive Rate')
+    plt.xlabel('False Positive Rate', fontsize=15)
+    plt.ylabel('True Positive Rate', fontsize=15)
     plt.title("ROC Curve for Multimodel")
     plt.legend(loc="lower right")
     plt.savefig(name+'.png')

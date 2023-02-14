@@ -63,7 +63,7 @@ def main():
             x = x.to(device)
             label = label.to(device)
 
-            logits = model(x)
+            logits,_ = model(x)
             loss = criterion(logits, label)
 
             pred = logits.argmax(dim=1)
@@ -94,7 +94,7 @@ def main():
                     x, label = x.to(device), label.to(device)
 
                     # [b, 72]
-                    logits = model(x)
+                    logits,_ = model(x)
                     # [b]
                     pred = logits.argmax(dim=1)
                     # [b] vs [b] => scalar tensor
@@ -115,7 +115,7 @@ def main():
                     x, label = x.to(device), label.to(device)
 
                     # [b, 72]
-                    logits = model(x)
+                    logits,_ = model(x)
                     # [b]
                     pred = logits.argmax(dim=1)
                     # [b] vs [b] => scalar tensor
@@ -136,7 +136,7 @@ def main():
                     x, label = x.to(device), label.to(device)
 
                     # [b, 72]
-                    logits = model(x)
+                    logits,_ = model(x)
                     # [b]
                     pred = logits.argmax(dim=1)
                     # [b] vs [b] => scalar tensor

@@ -74,20 +74,19 @@ def draw_CAM(device, model, img_path, save_path, transform=None, visual_heatmap=
     cv2.imwrite(save_path, superimposed_img)  # 将图像保存到硬盘
 
 img_root = '/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/processed/unimodelSpeedData2/speedbigger500'
-save_root= '/home/lai/Downloads/heamapSpeed/TN3.png'
+save_root= '/mnt/projects_sdc/lai/Lai_DAProjekt/4002.png'
 device = torch.device('cuda')
 tf = transforms.Compose([
             transforms.Resize((64, 64)),
             transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485,],
-                                 std=[0.229,])
+            transforms.Normalize(mean=[0.2686,],
+                                 std=[0.0940,])
         ])
 
-# ([ 17,  26,  28,  36,  37,  39,  58,  60,  69,  77,  86,  93, 100, 118,
-#         132, 137, 149, 161, 170, 182, 191, 217, 303, 315, 316, 346, 355, 390])    normal 200 anormal
+
 model = WideResNet(16, 72, 8)
 print(model)
-model.load_state_dict(torch.load('/mnt/projects_sdc/lai/GeoTransForBioreaktor/modelspeed21681.mdl'))
+model.load_state_dict(torch.load('/mnt/projects_sdc/lai/Lai_DAProjekt/modelspeed21681.mdl'))
 # name_all = os.listdir(img_root)
 # name_sample = random.sample(name_all, 100)
 # i=0
@@ -99,4 +98,18 @@ model.load_state_dict(torch.load('/mnt/projects_sdc/lai/GeoTransForBioreaktor/mo
 #     draw_CAM(device, model,img_path,save_path,tf)
 #     print(i)
 #     i += 1
-draw_CAM(device, model,'/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/processed/unimodelSpeedData2/speed400/1668783825383_camera_frame.png',save_root,tf)
+# 1668786118662_camera_frame.png
+# 1668786109322_camera_frame.png
+# 1668785687025_camera_frame.png
+# 1668786092492_camera_frame.png
+# 1668786047134_camera_frame.png
+# 1668786096722_camera_frame.png
+# 1668786050058_camera_frame.png
+# 1668786102883_camera_frame.png
+# 1668786119621_camera_frame.png
+# 1668785958900_camera_frame.png
+# 1668785967920_camera_frame.png
+# 1668785049306_camera_frame.png
+# 1668786101908_camera_frame.png
+# 1668786120253_camera_frame.png
+draw_CAM(device, model,'/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/processed/unimodelSpeedData2/speed400/1668783634467_camera_frame.png',save_root,tf)

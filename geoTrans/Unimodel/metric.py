@@ -3,7 +3,7 @@ sys.path.append('/mnt/projects_sdc/lai/GeoTransForBioreaktor/geoTrans')
 import numpy as np
 from sklearn.metrics import confusion_matrix, roc_curve, auc
 from dataset_bioreaktorSpeed import Bioreaktor_Detection as Speed
-from geoTrans.Unimodel.dataset_bioreaktorLuft import Bioreaktor_Detection as Luft
+from dataset_bioreaktorLuft import Bioreaktor_Detection as Luft
 from torch.utils.data import DataLoader, Dataset
 from Model import WideResNet
 import torch
@@ -16,6 +16,8 @@ import os
 from matplotlib import pyplot as plt
 import numpy as np
 import matplotlib.pyplot as plt
+import json
+import csv
 
 
 def load_data(dataname):
@@ -39,7 +41,7 @@ def load_data(dataname):
         device = torch.device('cuda')
         # viz = visdom.Visdom()
         model = WideResNet(16, num_trans, 8).to(device)
-        model.load_state_dict(torch.load('/mnt/projects_sdc/lai/GeoTransForBioreaktor/modelspeed21681.mdl'))
+        model.load_state_dict(torch.load('/mnt/projects_sdc/lai/Lai_DAProjekt/modelspeed21681.mdl'))
 
         # Eva for normal data
         model.eval()
@@ -99,7 +101,7 @@ def load_data(dataname):
         TPFNTNFP_prob = torch.Tensor.cpu(TPFNTNFP_prob)
 
     elif dataname == 'Luft':
-        root = '/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/processed/unimodelLuft_data2'
+        root = '/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/processed/unimodelLuft_data'
         batchsz = cfg.BATCH_SIZE
         num_trans = cfg.NUM_TRANS
         test_db = Luft(root, 64, mode='test')
@@ -111,8 +113,8 @@ def load_data(dataname):
 
         device = torch.device('cuda')
         # viz = visdom.Visdom()
-        model = WideResNet(16, num_trans, 8).to(device)
-        model.load_state_dict(torch.load('/mnt/projects_sdc/lai/GeoTransForBioreaktor/geoTrans/mdl/modelspeedfordata2.mdl'))
+        model = WideResNet(10, num_trans, 8).to(device)
+        model.load_state_dict(torch.load('/home/lai/Downloads/Modell/ModelLuft_10_8.mdl'))
 
         # Eva for normal data
         model.eval()
@@ -126,7 +128,6 @@ def load_data(dataname):
                 # [b]
                 pred =  nn.functional.softmax(logits, dim=1)
                 p = torch.tensor([pred[i, int(label[i].item())] for i in range(len(label))])
-
                 # [b] vs [b] => scalar tensor
                 # cat to calcute confusion matrix
                 if batchidx == 0:
@@ -137,7 +138,7 @@ def load_data(dataname):
                     total_label = torch.cat((total_label, label), 0)
             total_pred = total_pred.view((-1, 72))
             total_label = total_label.view((-1, 72))
-            TPFN = torch.eq(total_pred, total_label).float().sum(1)
+            TPFN = total_pred.float().sum(1)
             TPFN_prob = TPFN / cfg.NUM_TRANS
 
         # Eva for anormal data
@@ -163,7 +164,7 @@ def load_data(dataname):
                     total_label = torch.cat((total_label, label), 0)
             total_pred = total_pred.view((-1, 72))
             total_label = total_label.view((-1, 72))
-            TNFP = torch.eq(total_pred, total_label).float().sum(1)
+            TNFP = total_pred.float().sum(1)
             TNFP_prob = TNFP / cfg.NUM_TRANS
 
         TPFNTNFP_prob = torch.cat((TPFN_prob, TNFP_prob), 0)
@@ -181,25 +182,26 @@ def cf_matrix(prob, label, threshold, name):
     label = torch.Tensor.cpu(label)
     temp = torch.tensor(np.arange(0,len(pred)))
     print(temp[pred != label])
-    conf_matrix = cf_matrix(prob, label, threshold)
+    conf_matrix = confusion_matrix(label, pred)
     plt.ion()
     plt.imshow(np.array(conf_matrix), cmap=plt.cm.Blues)
     thresh = conf_matrix.max() / 2
     for x in range(2):
         for y in range(2):
             info = int(conf_matrix[y, x])
-            plt.text(x, y, info,
+            plt.text(x, y, info, 
                     verticalalignment='center',
                     horizontalalignment='center',
-                    color="white" if info > thresh else "black")
+                    color="white" if info > thresh else "black", fontsize=24)
 
     # plt.tight_layout()
     plt.yticks(range(2), ['anormal', 'normal'])
     plt.xticks(range(2), ['anormal', 'normal'], rotation=45)
     plt.savefig("ConfusionMatrix"+name+'.png', bbox_inches='tight')
+    plt.close()
     plt.ioff()
 
-    return confusion_matrix(label, pred)
+    return temp[pred != label]
 
 
 def draw_roc(label, prob, name):
@@ -228,13 +230,59 @@ def draw_roc(label, prob, name):
 
 
 name = 'Speed300'
-label, prob = load_data('Speed300')
+label, prob = load_data(name)
 print(label, prob)
-threshold = draw_roc(label, prob, 'Speed300')
+threshold = draw_roc(label, prob, name)
 print(threshold)
-conf_matrix = cf_matrix(prob, label, threshold, 'Speed300')
+false_index = cf_matrix(prob, label, threshold, name)
+# false_index = [1,18,22,23,24,28,29,30,31,35]
+normal_path = '/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/processed/unimodelSpeedData2/train.csv'
+path = (name=='Speed300') and '/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/processed/unimodelSpeedData2/test_small.csv' or '/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/processed/unimodelSpeedData2/test_big.csv'
+root = (name=='Speed300') and '/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/raw/unimodelspeed/speedsmaller300' or '/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/raw/unimodelspeed/speedbigger500'
+normal_root = '/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/raw/unimodelspeed/speed400'
+false_prozessparameter = []
 
-# plt.imshow(np.array(conf_matrix), cmap=plt.cm.Blues)
+if name == 'Speed300' or name =='Speed500':
+    for i in false_index:
+        if i > 1000:
+            
+            with open(path, 'r') as f:
+                reader = csv.reader(f)
+                result = list(reader)
+                img_name = os.path.split(result[(i-1000)*72][0])[1]
+                print(img_name)
+                json_name = img_name.split('_')[0]+'.json'
+                json_path = os.path.join(root, json_name)
+                with open(json_path, 'r') as f2:
+                    temp = json.load(f2)
+                    Speed = int(temp["stirrer_rotational_speed"]["data"]["opcua_value"]["value"])
+                    false_prozessparameter.append(Speed)
+        # if i < 20:
+            
+        #     with open(normal_path, 'r') as f:
+        #         reader = csv.reader(f)
+        #         result = list(reader)
+        #         img_name = os.path.split(result[(i+4000)*72][0])[1]
+        #         json_name = img_name.split('_')[0]+'.json'
+        #         json_path = os.path.join(normal_root, json_name)
+        #         with open(json_path, 'r') as f2:
+        #             temp = json.load(f2)
+        #             Speed = int(temp["stirrer_rotational_speed"]["data"]["opcua_value"]["value"])
+        #             false_prozessparameter.append(Speed)
+                # false_prozessparameter.append(result[(i+4000)*72][0])
+
+# print("top 10", params_list[:10])
+    plt.hist(false_prozessparameter, bins=20)
+    plt.title('Distribution of FN', fontsize=15)
+    plt.xlabel("Value Range", fontsize=15)
+    plt.ylabel("Counts", fontsize=15)
+    plt.tick_params(axis='both', labelsize=15)
+    plt.savefig("Verteilung"+name+'.png')
+    plt.show()
+    print(false_prozessparameter)
+
+
+# plt.imshow(np.array(conf_matrix), cmap=plt.cm.Blues) [(i-20*72)][0]
 # thresh = conf_matrix.max() / 2
 # for x in range(2):
 #     for y in range(2):

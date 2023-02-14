@@ -3,7 +3,7 @@ sys.path.append('/mnt/projects_sdc/lai/GeoTransForBioreaktor/geoTrans')
 from sklearn.metrics import confusion_matrix, roc_curve, auc
 from dataset_bioreaktorMulti import Bioreaktor_Detection
 from torch.utils.data import DataLoader, Dataset
-from geoTrans.multimdoel.Multi_Model import WideResNet as Multimodel
+from Multi_Model import WideResNet as Multimodel
 import torch
 import torch.optim as optim
 from torch import nn
@@ -36,8 +36,8 @@ def load_data(dataname):
 
         device = torch.device('cuda')
         # viz = visdom.Visdom()
-        model = Multimodel(10, num_trans, 8, 20, 0, 0, 1).to(device)
-        model.load_state_dict(torch.load('/mnt/projects_sdc/lai/GeoTransForBioreaktor/geoTrans/ModelMultiZufallTrans.mdl'))
+        model = Multimodel(10, num_trans, 6).to(device)
+        model.load_state_dict(torch.load('/mnt/projects_sdc/lai/Lai_DAProjekt/ModelMultiAll3lossRes_106_1.mdl'))
         model.eval()
         with torch.no_grad():
             pbar = tqdm(enumerate(vali_loader), total=len(vali_loader))
@@ -132,7 +132,7 @@ def draw_roc(label, prob):
     return best_threshold
 
 # dataname == 'MultimodelZustand' or dataname == 'MultimodelParameter' or dataname == 'MultimodelConcate' MultimodelAllNoGeo
-label, prob = load_data('MultimodelAllNoGeo')
+label, prob = load_data('MultimodelZustand')
 print(label, prob)
 threshold = draw_roc(label, prob)
 print(threshold)
@@ -146,7 +146,7 @@ for x in range(2):
         plt.text(x, y, info,
                  verticalalignment='center',
                  horizontalalignment='center',
-                 color="white" if info > 500 else "black")
+                 color="white" if info > 500 else "black", fontsize=24)
 
 # plt.tight_layout()
 plt.yticks(range(2), ['anormal', 'normal'])

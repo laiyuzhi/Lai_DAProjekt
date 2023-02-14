@@ -17,7 +17,7 @@
             *Return:* 1, TPFNTNFP_label: Ziel für Anomaliescore0: Anomalie 1: normale Daten, 2, TPFNTNFP_prob: Anomaliescore
         **draw_roc()**: Zeichnen von Roc-Kurven
             *Arguments:* 1. Ziel für Anomaliescore label: 0: Anomalie 1: normale Daten  2. prob: Anomaliescore. 3. name: name für Bild
-        **cf_matrix:** Erhalten Sie die Konfusionsmatrix
+        **cf_matrix():** Erhalten Sie die Konfusionsmatrix
 
 ***pre_process.py***:  Vorverarbeitung der Bilder
     **cut_picture()**: Ein Bild auswählen und den ausgeschnittenen Bereich mit der Maus markieren  
