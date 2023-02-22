@@ -66,6 +66,7 @@ plt.tick_params(axis='both', labelsize=15)
 plt.savefig("Verteilung"+"roc501"+'.png')
 plt.show()
 
+# Distribution of the difference between misclassified abnormal data and normal data
 
 for i in range(0,1000):
     with open(path, 'r') as f2:
