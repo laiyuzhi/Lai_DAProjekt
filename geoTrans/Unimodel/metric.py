@@ -257,19 +257,7 @@ if name == 'Speed300' or name =='Speed500':
                     temp = json.load(f2)
                     Speed = int(temp["stirrer_rotational_speed"]["data"]["opcua_value"]["value"])
                     false_prozessparameter.append(Speed)
-        # if i < 20:
-            
-        #     with open(normal_path, 'r') as f:
-        #         reader = csv.reader(f)
-        #         result = list(reader)
-        #         img_name = os.path.split(result[(i+4000)*72][0])[1]
-        #         json_name = img_name.split('_')[0]+'.json'
-        #         json_path = os.path.join(normal_root, json_name)
-        #         with open(json_path, 'r') as f2:
-        #             temp = json.load(f2)
-        #             Speed = int(temp["stirrer_rotational_speed"]["data"]["opcua_value"]["value"])
-        #             false_prozessparameter.append(Speed)
-                # false_prozessparameter.append(result[(i+4000)*72][0])
+   
 
 # print("top 10", params_list[:10])
     plt.hist(false_prozessparameter, bins=20)
@@ -282,19 +270,4 @@ if name == 'Speed300' or name =='Speed500':
     print(false_prozessparameter)
 
 
-# plt.imshow(np.array(conf_matrix), cmap=plt.cm.Blues) [(i-20*72)][0]
-# thresh = conf_matrix.max() / 2
-# for x in range(2):
-#     for y in range(2):
-#         info = int(conf_matrix[y, x])
-#         plt.text(x, y, info,
-#                  verticalalignment='center',
-#                  horizontalalignment='center',
-#                  color="white" if info > thresh else "black")
 
-# # plt.tight_layout()
-# plt.yticks(range(2), ['anormal', 'normal'])
-# plt.xticks(range(2), ['anormal', 'normal'], rotation=45)
-# plt.savefig("ConfusionMatrix(AnormaliesSpeed300e1).png", bbox_inches='tight')
-# plt.ioff()
-# plt.show()
