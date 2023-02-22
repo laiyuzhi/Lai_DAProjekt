@@ -11,9 +11,9 @@
 ***Model.py***: Erstellen Sie den WideResNet  
     **Arguments*:*  1. N: Tiefe des Netzes. Für dataset_bioreajtorLuft.py N=10, Für dataset_bioreajtorSpeed.py N=16. 2. k: Breite des Netzes  . Für dataset_bioreajtorLuft.py k=8, Für dataset_bioreajtorSpeed.py N=8  3. num_classes Anzahl der Ausgangsknoten
 
-***metric.py***:  Erhalten Sie Roc-Kurve, Konfusionsmatrix und AUC-Werte
+***metric.py***:  Erhalten Sie Roc-Kurve, Konfusionsmatrix, AUC-Werte, Verteilung für FN-Daten(Drehzahl>500 und <300 als Anomalie)
         **load_data()**: Berechnen Sie die Anomaliescore.
-            *Arguments:* 1. dataname: Wählen Sie aus, zu welcher Ausnahme die berechneten Metriken gehören. 'Speed300': Drehzahl<400 als Anomalie, 'Speed500':Drehzahl>400 als Anomalie. 'Luft': Volumenstrom als Anomalie.
+            *Arguments:* 1. dataname: Wählen Sie aus, zu welcher Ausnahme die berechneten Metriken gehören. 'Speed300': Drehzahl<400 als Anomalie, 'Speed500':Drehzahl>500 als Anomalie. 'Luft': Volumenstrom als Anomalie.
             *Return:* 1, TPFNTNFP_label: Ziel für Anomaliescore0: Anomalie 1: normale Daten, 2, TPFNTNFP_prob: Anomaliescore
         **draw_roc()**: Zeichnen von Roc-Kurven
             *Arguments:* 1. Ziel für Anomaliescore label: 0: Anomalie 1: normale Daten  2. prob: Anomaliescore. 3. name: name für Bild
@@ -67,4 +67,7 @@ In dieser Dokumentation wird ein multimodales Modell mit geometrischer Transform
       *return*: global_step: Gesamtzahl der Iterationzahl(diese Epoche), avg_train_loss
   
 **HP_Optim.py**: Hyperparametrische Optimierung durchführen, Verlust, bestes Modell, Metriken(ROC,f1,Konfusionsmatrix) für besten Modell und AUC für jedes epcoh speichern 
-    
+
+**get_FNDistrubition.py**: Ermittlung der Verteilung der Differenz zwischen den falsch klassifizierten abnormalen Daten und den normalen Daten
+
+**get_meanROCCM.py**: Ermitteln der durchschnittlichen ROC-Kurve und der Konfusionsmatrix für das optimale Modell
