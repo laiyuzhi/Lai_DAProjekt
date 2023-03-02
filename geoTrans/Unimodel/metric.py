@@ -198,10 +198,7 @@ if name == 'Speed300' or name =='Speed500':
                     temp = json.load(f2)
                     Speed = int(temp["stirrer_rotational_speed"]["data"]["opcua_value"]["value"])
                     false_prozessparameter.append(Speed)
-<<<<<<< HEAD
-=======
-   
->>>>>>> 0c0ca17c4bf50515115b5134bac753cdf3aed43b
+
 
 # print("top 10", params_list[:10])
     plt.hist(false_prozessparameter, bins=20)
@@ -214,7 +211,4 @@ if name == 'Speed300' or name =='Speed500':
     print(false_prozessparameter)
 
 
-<<<<<<< HEAD
-=======
 
->>>>>>> 0c0ca17c4bf50515115b5134bac753cdf3aed43b
