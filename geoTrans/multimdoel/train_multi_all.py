@@ -17,12 +17,17 @@ import numpy as np
 from visdom import Visdom
 
 
-def main():
+def main(): 
+    
+    torch.manual_seed(1234)
     batchsz = cfg.BATCH_SIZE
     lr = cfg.LEARN_RATE
     epochs = cfg.EPOCHS
-    num_trans = cfg.NUM_TRANS
+    num_trans = cfg.NUM_TRANS 
+    device = torch.device('cuda')
+    criterion = nn.CrossEntropyLoss().to(device)
     root = "/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/processed/MultiModelAll"
+
     train_db = Bioreaktor_Detection(root, 64, mode='Train')
     train_loader = DataLoader(train_db, batch_size=batchsz, shuffle=True,
                             num_workers=0)
@@ -32,24 +37,17 @@ def main():
     testanormal_loader = DataLoader(testanormal_db, batch_size=batchsz, shuffle=False, num_workers=0)
     x1, x2, label = iter(testanormal_loader).next()
     print('x1:', x1.shape, 'x2:', x2, 'label:', label.shape)
-
-    device = torch.device('cuda')
-    criterion = nn.CrossEntropyLoss().to(device)
-    criterion_pred = nn.MSELoss().to(device)
-    # viz = visdom.Visdom()
-    torch.manual_seed(1234)
+   
     model = WideResNet(10, num_trans, 6).to(device)
     optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=5e-4)
     print(model)
 
+    # Visualisation through visdom
     viz = Visdom()
     viz.line([0.], [0.], win='train_loss', opts=dict(title='train loss'))
     viz.line([[0.0, 0.0]], [0.], win='test_acc', opts=dict(title='normal acc.&anormal acc.',
                                                    legend=['normal acc.', 'anormal acc.']))
 
-
-    best_epoch, best_acc = 0, 0
-    worst_epoch, worst_acc = 0, 1
     global_step = 0
     for epoch in range(int(np.ceil(epochs / num_trans))):
         model.train()
@@ -88,7 +86,6 @@ def main():
         if (epoch != 0 and epoch % cfg.VAL_EACH == 0) or epoch == 0:
             total_correct = 0
             total_num = 0
-            total_mse = 0
             model.eval()
             with torch.no_grad():
 
@@ -104,11 +101,8 @@ def main():
                     pred = logits_end.argmax(dim=1)
                     # [b] vs [b] => scalar tensor
                     correct = torch.eq(pred, label).float().sum().item()
-                    # mse = criterion_pred(logits_pred, x2).float().item()
                     total_correct += correct
-                    # total_mse += mse
                     total_num += x1.size(0)
-
 
 
                 normalacc = total_correct / total_num
@@ -121,7 +115,6 @@ def main():
             total_correct_end = 0
             total_correct_early = 0
             total_num = 0
-            total_mse = 0
             model.eval()
             with torch.no_grad():
                 pbar = tqdm(enumerate(testanormal_loader), total=len(testanormal_loader))
@@ -135,8 +128,6 @@ def main():
                     pred_early = logits_early.argmax(dim=1)
 
                     # [b] vs [b] => scalar tensor
-                    # mse = criterion_pred(logits_pred, x2).float().item()
-                    # total_mse += mse
                     correct_end = torch.eq(pred_end, label).float().sum().item()
                     total_correct_end += correct_end
                     total_num += x1.size(0)

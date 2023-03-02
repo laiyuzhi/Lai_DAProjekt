@@ -18,11 +18,14 @@ from visdom import Visdom
 def main():
     root = '/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/processed/unimodelSpeedData2'
 
-
+    device = torch.device('cuda')
+    criterion = nn.CrossEntropyLoss().to(device)
+    torch.manual_seed(1234)
     batchsz = cfg.BATCH_SIZE
     lr = cfg.LEARN_RATE
     epochs = cfg.EPOCHS
     num_trans = cfg.NUM_TRANS
+
     train_db = Bioreaktor_Detection(root, 64, mode='train')
     testbig_db = Bioreaktor_Detection(root, 64, mode='testbig')
     testsmall_db = Bioreaktor_Detection(root, 64, mode='testsmall')
@@ -35,27 +38,19 @@ def main():
     x, label = iter(train_loader).next()
     print('x:', x.shape, 'label:', label.shape)
 
-    device = torch.device('cuda')
-    criterion = nn.CrossEntropyLoss().to(device)
-
-    torch.manual_seed(1234)
     model = WideResNet(16, num_trans, 8).to(device)
-
     optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=5e-4)
-
     print(model)
-
+    # Visualisation through visdom
     viz = Visdom()
     viz.line([0.], [0.], win='train_loss', opts=dict(title='train loss'))
     viz.line([[0.0, 0.0, 0.0]], [0.], win='test_acc', opts=dict(title='normal acc.&anormal acc.',
                                                    legend=['normal acc.', 'anormal_big acc.', 'anormal_small acc.']))
 
-    best_epoch, best_acc = 0, 0
+    
     global_step = 0
     for epoch in range(int(np.ceil(epochs/num_trans))):
         model.train()
-        train_loss_one = 0
-        train_num = 0
         pbar = tqdm(enumerate(train_loader), total=len(train_loader))
         for batchidx, (x, label) in pbar:
             # pbar.set_description("Epoch: s%" % str(epoch))

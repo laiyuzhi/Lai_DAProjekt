@@ -61,24 +61,6 @@ class UserCrop:
                 print(bbox)
 
         return img, bbox
-        cut = img[bbox[1] : bbox[1] + bbox[3], bbox[0] : bbox[0] + bbox[2]]
-        print(bbox)
-
-    # # read from csv file
-    # images, labels = [], []
-    # with open(os.path.join(self.root, filename)) as f:
-    #     reader = csv.reader(f)
-    #     for row in reader:
-    #         # 'pokemon\\bulbasaur\\00000000.png', 0
-    #         img, label = row
-    #         label = int(label)
-
-    #         images.append(img)
-    #         labels.append(label)
-
-    # assert len(images) == len(labels)
-
-    # return images, labels
 
 def cut_picture():
     img, bbox = UserCrop('bboxMulti', '/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/raw/MultiAll').cut()
@@ -86,34 +68,7 @@ def cut_picture():
     cv2.namedWindow("cut")
     cv2.imshow("cut", cut)
     cv2.waitKey(0)
-    # root = 'F:\\data_lai\\unimodel_data\\train_normal'
-    # images = load_csv("test_a", root)
-    # img, bbox = UserCrop('bbox', 'E:\\Program Files\\Abschlussarbeit\\geoTrans').cut()
-    # print(images)
-    # cut = img[bbox[1] : bbox[1] + bbox[3], bbox[0] : bbox[0] + bbox[2]]
-    # cv2.namedWindow("cut")
-    # cv2.imshow("cut", cut)
-    # cv2.waitKey(0)
-    # cut = cv2.resize(cut, [256, 256])
-    # cv2.namedWindow("cut2")
-    # cv2.imshow("cut2", cut)
-    # cv2.waitKey(0)
-    # # import PIL
-    # for i in range(5):
-    #     # print("".join(images[i]))
-    #     image = Image.open("".join(images[i])).convert("L")
-    #     cut = image.crop(bbox)
-    #     cut = np.array(cut)
-    #     cut = np.expand_dims(cut, -1)
-    #     print((image.dtype))
-    #     cv2.namedWindow("a")
-    #     cv2.imshow("a", image)
-    #     cv2.waitKey(0)
-    #     #cut = image[bbox[1] : bbox[1] + bbox[3], bbox[0] : bbox[0] + bbox[2]]
-    #     #cut = cv2.resize(cut, [64, 64])
-    #     cv2.namedWindow("s")
-    #     cv2.imshow("s", cut)
-    #     cv2.waitKey(0)
+   
 def preprocess():
     root = '/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/raw/MultiAll/Vali10Zu'
     save_root = '/mnt/data_sdb/datasets/BioreaktorAnomalieDaten/processed/MultiModelAll'
@@ -132,12 +87,6 @@ def preprocess():
                         os.makedirs(save_path)
                 png_path = os.path.join(save_path, png_name)
                 json_path = os.path.join(save_path, json_name)
-            # else:
-            #     save_path = os.path.join(save_root, 'Test')
-            #     if not os.path.exists(save_path):
-            #         os.makedirs(save_path)
-            #     png_path = os.path.join(save_path, png_name)
-            #     json_path = os.path.join(save_root, 'Test', json_name)
             cv2.imwrite(png_path, cut, [cv2.IMWRITE_PNG_COMPRESSION, 0])
             shutil.copyfile(json_root, json_path)
             i += 1
@@ -164,29 +113,8 @@ def MakeDataSet():
                 json_path = os.path.join(save_path, json_name)
             shutil.move(json_root, save_path)
             shutil.move(png_root, save_path)
-    # for name in os.listdir(root):
-    #     if not os.path.isdir(os.path.join(root, name)):
-    #         continue
-    #     print(os.path.join(root, name))
-    #     i = 0
-    #     for img in os.listdir(os.path.join(root, name)):
-    #         if os.path.join(os.path.join(root, name), img).endswith('.png'):
-    #             img_path = os.path.join(os.path.join(root, name), img)
-    #             image = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
-    #             cut = image[bbox[1] : bbox[1] + bbox[3], bbox[0] : bbox[0] + bbox[2]]
-    #             if i <= 3999:
-    #                 save_path = os.path.join(save_root, 'Train', name)
-    #                 if not os.path.exists(save_path):
-    #                     os.makedirs(save_path)
-    #                 img_path = os.path.join(save_path, img)
-    #             else:
-    #                 save_path = os.path.join(save_root, 'Test', name)
-    #                 if not os.path.exists(save_path):
-    #                     os.makedirs(save_path)
-    #                 img_path = os.path.join(save_path, img)
-    #             cv2.imwrite(img_path, cut, [cv2.IMWRITE_PNG_COMPRESSION, 0])
-    #             i += 1
-    #     print(i)
+  
 
 if __name__ =='__main__':
-    MakeDataSet()
+    cut_picture()
+    preprocess()
